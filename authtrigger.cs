@@ -20,7 +20,7 @@ public class Authtrigger
 
     [Function("authtrigger")]
     public async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "get", "post")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")]
         HttpRequest req, ILogger log)
     {
         string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
