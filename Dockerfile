@@ -2,25 +2,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copy project files
-COPY ["ContactKeeper/ContactKeeper.csproj", "ContactKeeper/"]
-COPY ["ContactKeeper.Test/ContactKeeper.Test.csproj", "ContactKeeper.Test/"]
+# Copy e restore
+COPY ["Functions.csproj", "./"]
+RUN dotnet restore "Functions.csproj"
 
-# Restore dependencies
-RUN dotnet restore "ContactKeeper/ContactKeeper.csproj"
-
-# Copy source and publish
+# Copy source e publish
 COPY . .
-WORKDIR "/src/ContactKeeper"
-RUN dotnet publish "ContactKeeper.csproj" -c Release -o /app/publish
+RUN dotnet publish "Functions.csproj" -c Release -o /app/publish --no-restore
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
-WORKDIR /app
+# Runtime stage — imagem correta para Azure Functions isolated
+FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated9.0
+WORKDIR /home/site/wwwroot
+
 COPY --from=build /app/publish .
 
-# Expose port
-EXPOSE 80
+ENV AzureWebJobsScriptRoot=/home/site/wwwroot
+ENV AzureFunctionsJobHost__Logging__Console__IsEnabled=true
 
-# Start application
-ENTRYPOINT ["dotnet", "ContactKeeper.dll"]
+EXPOSE 80
