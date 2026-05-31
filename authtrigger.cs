@@ -9,11 +9,11 @@ using Newtonsoft.Json;
 
 namespace Company.Function;
 
-public class authtrigger
+public class Authtrigger
 {
-    private readonly ILogger<authtrigger> _logger;
+    private readonly ILogger<Authtrigger> _logger;
 
-    public authtrigger(ILogger<authtrigger> logger)
+    public Authtrigger(ILogger<Authtrigger> logger)
     {
         _logger = logger;
     }
